@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
 
     if (checkPassword) {
       const token = jwt.sign({ userId: user._id }, "superdupersecretpassword", {
-        expiresIn: "1d", // 1 day
+        expiresIn: "1d",
       });
       return res.status(200).json({
         success: true,
