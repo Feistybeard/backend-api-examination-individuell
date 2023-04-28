@@ -2,9 +2,8 @@ const userModel = require("../model/user");
 const jwt = require("jsonwebtoken");
 
 async function addUser(req, res) {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
     const userExist = await userModel.checkUsername(username);
     if (userExist) {
       return res
@@ -19,37 +18,54 @@ async function addUser(req, res) {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error || "Kunde inte skapa användare, försök igen!",
+      error: "Server fel! Försök igen senare.",
     });
   }
 }
 
 async function loginUser(req, res) {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
+    const user = await userModel.checkUsername(username);
 
-  const user = await userModel.checkUsername(username);
-
-  if (user) {
-    const checkPassword = await userModel.checkPassword(
-      password,
-      user.password
-    );
-
-    if (checkPassword) {
-      const token = jwt.sign({ userId: user._id }, "superdupersecretpassword", {
-        expiresIn: "1d",
-      });
-      return res.status(200).json({
-        success: true,
-        message: "Inloggad!",
-        token,
-      });
-    } else {
+    if (!user) {
       return res.status(400).json({
         success: false,
-        error: "Felaktigt lösenord!",
+        error: "Användaren finns inte!",
       });
     }
+
+    if (user) {
+      const checkPassword = await userModel.checkPassword(
+        password,
+        user.password
+      );
+
+      if (checkPassword) {
+        const token = jwt.sign(
+          { userId: user._id },
+          "superdupersecretpassword",
+          {
+            expiresIn: "10m",
+          }
+        );
+        return res.status(200).json({
+          success: true,
+          message: "Inloggad!",
+          token,
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          error: "Felaktigt lösenord!",
+        });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Server fel! Försök igen senare.",
+    });
   }
 }
 
@@ -74,7 +90,7 @@ async function validateToken(req, res) {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error,
+      error: "Server fel! Försök igen senare.",
     });
   }
 }

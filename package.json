@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "swagger-autogen": "node ./swagger.js"
   },
   "keywords": [],
   "author": "Marvan Al Kufai",
@@ -16,6 +17,8 @@
     "jsonwebtoken": "^9.0.0",
     "nedb-promises": "^6.2.1",
     "nodemon": "^2.0.22",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.2",
     "uuid-random": "^1.3.2"
   }
 }
